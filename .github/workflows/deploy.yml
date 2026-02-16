@@ -1,97 +1,30 @@
 name: Deploy Node.js App
 
-concurrency:
-  group: deploy-node-app
-  cancel-in-progress: true
-
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
-  workflow_dispatch:
 
 jobs:
-  build-and-test:
+  build:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
-      - name: Setup Node.js
+      - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: "18"
-          cache: "npm"
-          cache-dependency-path: package-lock.json
+          node-version: 18
 
-      - name: Install dependencies
-        run: npm ci
+      - run: npm ci
+      - run: npm test -- --coverage
 
-      - name: Run tests
-        run: npm test
-        continue-on-error: true
-
-      - name: Setup Java
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      - name: Install SonarScanner CLI Dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y wget unzip
-          
-      - name: Install SonarScanner CLI
-        run: |
-          wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006.zip
-          unzip sonar-scanner-cli-5.0.1.3006.zip
-          mv sonar-scanner-5.0.1.3006 sonar-scanner
-          echo "$(pwd)/sonar-scanner/bin" >> $GITHUB_PATH
-          
-      - name: Run SonarQube Scan
-        run: |
-          sonar-scanner \
-            -Dsonar.projectKey=node-app \
-            -Dsonar.projectName=node-app \
-            -Dsonar.sources=. \
-            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
-            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+      # ✅ SonarCloud Official Action
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@v2
         env:
-          SONAR_SCANNER_OPTS: "-Xmx512m"
-
-
-      - name: Start server and Health check
-        run: |
-          node index.js > app.log 2>&1 &
-          SERVER_PID=$!
-
-          for i in {1..10}; do
-            if curl -s http://127.0.0.1:3000/health; then
-              echo "App is healthy"
-              break
-            fi
-            sleep 3
-            if [ $i -eq 10 ]; then
-              echo "Health check failed"
-              cat app.log
-              kill $SERVER_PID || true
-              exit 1
-            fi
-          done
-        env:
-          PORT: 3000
-
-      - name: Stop server
-        run: pkill -f "node index.js" || true
-
-  deploy:
-    needs: build-and-test
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-
-    steps:
-      - uses: actions/checkout@v3
-      - name: Deploy
-        run: echo "Add real deployment here"
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
