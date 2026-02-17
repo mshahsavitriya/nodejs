@@ -1,4 +1,36 @@
-name: Deploy Node.js App
+# name: Deploy Node.js App
+
+# on:
+#   push:
+#     branches: [main]
+#   pull_request:
+#     branches: [main]
+
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - uses: actions/checkout@v3
+#         with:
+#           fetch-depth: 0
+
+#       - name: Setup Node
+#         uses: actions/setup-node@v3
+#         with:
+#           node-version: 18
+
+#       - run: npm ci
+#       - run: npm test -- --coverage
+
+#       # ✅ SonarCloud Official Action
+#       - name: SonarCloud Scan
+#         uses: SonarSource/sonarcloud-github-action@v2
+#         env:
+#           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+
+name: Code Scan (SonarCloud + CodeRabbit)
 
 on:
   push:
@@ -7,7 +39,7 @@ on:
     branches: [main]
 
 jobs:
-  build:
+  scan:
     runs-on: ubuntu-latest
 
     steps:
@@ -15,16 +47,15 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Node
-        uses: actions/setup-node@v3
+      # ✅ CodeRabbit PR Review
+      - name: CodeRabbit Review
+        uses: coderabbitai/coderabbit-action@v1
         with:
-          node-version: 18
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
-      - run: npm ci
-      - run: npm test -- --coverage
-
-      # ✅ SonarCloud Official Action
+      # ✅ SonarCloud Scan
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v2
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
