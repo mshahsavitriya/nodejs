@@ -23,13 +23,7 @@ jobs:
       - run: npm ci
       - run: npm test -- --coverage
 
-      # ✅ CodeRabbit AI Review
-      - name: CodeRabbit Review
-        uses: coderabbitai/coderabbit-action@v1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-
-      # ✅ SonarCloud Scan
+      # ✅ SonarCloud Official Action
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v2
         env:
