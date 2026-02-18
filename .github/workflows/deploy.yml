@@ -1,31 +1,45 @@
-name: Deploy Node.js App
+name: PR Review
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
 
 jobs:
-  build:
+  trigger:
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
+      - run: echo "PR opened - CodeRabbit will review automatically."
 
-      - name: Setup Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
 
-      - run: npm ci
-      - run: npm test -- --coverage
 
-      # SonarCloud Official Action
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@v2
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+# name: Deploy Node.js App
+
+# on:
+#   push:
+#     branches: [main]
+#   pull_request:
+#     branches: [main]
+
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - uses: actions/checkout@v3
+#         with:
+#           fetch-depth: 0
+
+#       - name: Setup Node
+#         uses: actions/setup-node@v3
+#         with:
+#           node-version: 18
+
+#       - run: npm ci
+#       - run: npm test -- --coverage
+
+#       # SonarCloud Official Action
+#       - name: SonarCloud Scan
+#         uses: SonarSource/sonarcloud-github-action@v2
+#         env:
+#           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 

@@ -1,7 +1,9 @@
 const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 3000;
+
 const API_KEY = "secretkey123456";
+
 app.get('/', (req, res) => {
   console.log('[LOG] Home endpoint accessed');
   res.json({
@@ -12,7 +14,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/health', (req, res) => {
-  console.log('[LOG] Health check endpoint');
+  console.log('[LOG] Health check endpoint.');
   res.json({ status: 'healthy' });
 });
 
