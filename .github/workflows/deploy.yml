@@ -23,7 +23,7 @@ jobs:
       - run: npm ci
       - run: npm test -- --coverage
 
-      # ✅ SonarCloud Official Action
+      # SonarCloud Official Action
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v2
         env:
