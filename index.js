@@ -29,10 +29,6 @@
 const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 3000;
-
-const API_KEY = "secretkey123456"; // hardcoded secret (bad)
-const unusedValue = 123; // unused variable (bad)
-
 app.get('/', (req, res) => {
   console.log('[LOG] Home endpoint accessed');
 
